@@ -57,25 +57,47 @@ class SearchableEncryptionScheme():
 
     def build_index(self, document_identifier, kpriv, list_of_words):
 
+        # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
+        trapdoor = []
+        # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
+        codewords = []
+
         for word in list_of_words:
             '''
             Create a trapdoor for each unique word
             '''
-            # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
-            trapdoor = []
-
             # Takes the word and creates a trapdoor
             for i in range(0,self.r):
+                # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
+                key = bytes.fromhex(kpriv[i])
+
                 w = bytes(list_of_words[i], 'utf-8')
-                trapdoor_digest = hmac.new(list_of_words[i], msg=w, digestmod=hashlib.sha1)
+                trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
+                trapdoor_digest = trapdoor_digest.hexdigest()
                 trapdoor.append(trapdoor_digest)
+
             '''
             Take the trapdoor and create a codeword for each word in list_of_words
             '''
-            # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
-            codewords = []
 
-            # Take each word and
+
+            # Take each word and hash it again with the dociment_identifier as the key to generate y1, y2, ..., yr
+            for i in range(0, self.r):
+                # encode the docunemt identifier and the trapdoor[i]
+                d_id = bytes(document_identifier, 'utf-8')
+                message = bytes(trapdoor[i], 'utf-8')
+
+                codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
+                codeword_digest = codeword_digest.hexdigest()
+                codewords.append(codeword_digest)
+
+        print("This is the list of trapdoors: " + str(trapdoor))
+        print(len(trapdoor))
+        print("This is the list of codewords: " + str(codewords))
+        print(len(codewords))
+
+
+
 
 
 
