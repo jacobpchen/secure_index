@@ -55,3 +55,27 @@ class SearchableEncryptionScheme():
 
         return tw
 
+    def build_index(self, document_identifier, kpriv, list_of_words):
+
+        for word in list_of_words:
+            '''
+            Create a trapdoor for each unique word
+            '''
+            # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
+            trapdoor = []
+
+            # Takes the word and creates a trapdoor
+            for i in range(0,self.r):
+                w = bytes(list_of_words[i], 'utf-8')
+                trapdoor_digest = hmac.new(list_of_words[i], msg=w, digestmod=hashlib.sha1)
+                trapdoor.append(trapdoor_digest)
+            '''
+            Take the trapdoor and create a codeword for each word in list_of_words
+            '''
+            # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
+            codewords = []
+
+            # Take each word and
+
+
+
