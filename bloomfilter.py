@@ -74,7 +74,6 @@ class BloomFilter(object):
             # SHA-1
             # Encrypt the item using SHA1
             result = hashlib.sha1(item.encode())
-
             # Convert the result to a hexadecimal
             # print("The hexadecimal equilvalent of SHA1 is:")
             digest = result.hexdigest()
@@ -96,8 +95,8 @@ class BloomFilter(object):
             result = hashlib.sha256(item.encode())
             # print("The hexadecimal equilvalent of SHA256 is:")
             digest = result.hexdigest()
-            print(len(digest))
-            print(digest)
+            #print(len(digest))
+            # print("This is the digest AFTER ENCRYPTING: " + str(digest))
 
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
@@ -107,6 +106,7 @@ class BloomFilter(object):
             for i in range(self.hash_count):
                 bit = int(digests[i], 16)
                 # print(str(bit) + ' ', end='')
+                #print("Setting bit " + str(bit) + " true")
                 self.bit_array[bit] = True
 
     def check(self, item):
@@ -118,7 +118,7 @@ class BloomFilter(object):
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
 
-            for i in range(len(digests)):
+            for i in range(self.hash_count):
                 bit = int(digests[i], 16)
                 if self.bit_array[bit] == False:
                     return False
@@ -128,10 +128,11 @@ class BloomFilter(object):
         else:
             result = hashlib.sha256(item.encode())
             digest = result.hexdigest()
+            # print("This is the digest after encrypting (CHECK): " + str(digest))
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
 
-            for i in range(len(digests)):
+            for i in range(self.hash_count):
                 bit = int(digests[i], 16)
                 if self.bit_array[bit] == False:
                     return False
