@@ -43,6 +43,7 @@ class SearchableEncryptionScheme():
     def trapdoor(self, kpriv, word):
         # Creates an empty list to hold the trapdoors for word
         tw = []
+        print(word)
         # Convert the word into a bytes object - Necessary to use HMAC
         w = bytes(word, 'utf-8')
 
@@ -60,7 +61,7 @@ class SearchableEncryptionScheme():
         return tw
 
     def build_index(self, document_identifier, kpriv, list_of_words):
-
+        print(list_of_words)
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
         trapdoor = []
         # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
@@ -75,7 +76,7 @@ class SearchableEncryptionScheme():
                 # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
                 key = bytes.fromhex(kpriv[i])
 
-                w = bytes(list_of_words[i], 'utf-8')
+                w = bytes(word, 'utf-8')
                 trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
                 trapdoor_digest = trapdoor_digest.hexdigest()
                 trapdoor.append(trapdoor_digest)
@@ -103,11 +104,7 @@ class SearchableEncryptionScheme():
         print("False positive probability: {:.6%}".format(bf.fp_prob))
         print("Number of hash functions:{}".format(bf.hash_count))
 
-        
-
-
-            
-
+        # for codeword in codewords:
 
 
         print("This is the list of trapdoors: " + str(trapdoor))
