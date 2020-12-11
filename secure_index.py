@@ -43,7 +43,7 @@ class SearchableEncryptionScheme():
     def trapdoor(self, kpriv, word):
         # Creates an empty list to hold the trapdoors for word
         tw = []
-        print(word)
+        # print(word)
         # Convert the word into a bytes object - Necessary to use HMAC
         w = bytes(word, 'utf-8')
 
@@ -71,6 +71,8 @@ class SearchableEncryptionScheme():
             '''
             Create a trapdoor for each unique word
             '''
+            print("Creating trapdoor for: " + str(word))
+
             # Takes the word and creates a trapdoor
             for i in range(0,self.r):
                 # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
@@ -80,6 +82,8 @@ class SearchableEncryptionScheme():
                 trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
                 trapdoor_digest = trapdoor_digest.hexdigest()
                 trapdoor.append(trapdoor_digest)
+
+            #print(trapdoor)
 
             '''
             Take the trapdoor and create a codeword for each word in list_of_words
@@ -95,6 +99,9 @@ class SearchableEncryptionScheme():
                 codeword_digest = codeword_digest.hexdigest()
                 codewords.append(codeword_digest)
 
+        print("These are the trapdoors: " + str(trapdoor))
+        print("These are the codewords: " + str(codewords))
+
         '''
         Create a bloom filter and insert the codewords into the bloom filter
         '''
@@ -107,37 +114,31 @@ class SearchableEncryptionScheme():
 
         # For each hash value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
+            # print("Adding: " + str(codeword))
             bf.add(codeword)
 
         # Test the bloom filter - Check if trapdoor returns true
         count = 0
         for word in trapdoor:
+            # print("Checking: " + str(word))
             if bf.check(word):
                 count += 1
                 print("False Positive")
-            else:
-                print("Not Found")
-        print(count)
+
+        print("Errors found " + str(count))
 
         # Test the bloom filter - Check if each codeword returns true
         count = 0
         for word in codewords:
-            if bf.check(word):
-                print("Found!")
-            else:
+            # print("Checking: " + str(word))
+            if not bf.check(word):
                 print("Error")
                 count += 1
-        print("Errors found" + str(count))
+
+        print("Errors found " + str(count))
 
 
-
-
-
-        print("This is the list of trapdoors: " + str(trapdoor))
-        print(len(trapdoor))
-        print("This is the list of codewords: " + str(codewords))
-        print(len(codewords))
-
+        return(bf)
 
 
 
