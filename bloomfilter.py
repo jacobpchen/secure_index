@@ -82,8 +82,9 @@ class BloomFilter(object):
             # print(digest)
 
             # Split the digest into 10 - 4 hexadecimal digits
-            n = 4
+            n = 2
             digests = [digest[i:i+n] for i in range(0, len(digest), n)]
+
             # print(digests)
 
             # Convert to the 4 hexadecimal digit to an integer between 0 - m
@@ -98,7 +99,7 @@ class BloomFilter(object):
             print(len(digest))
             print(digest)
 
-            n = 4
+            n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
             # print(digests)
 
@@ -111,19 +112,31 @@ class BloomFilter(object):
     def check(self, item):
 
         # Check for existence of an item in the filter
+        if self.hash_count < 10:
+            result = hashlib.sha1(item.encode())
+            digest = result.hexdigest()
+            n = 2
+            digests = [digest[i:i + n] for i in range(0, len(digest), n)]
 
-        result = hashlib.sha1(item.encode())
-        digest = result.hexdigest()
-        n = 4
-        digests = [digest[i:i + n] for i in range(0, len(digest), n)]
+            for i in range(len(digests)):
+                bit = int(digests[i], 16)
+                if self.bit_array[bit] == False:
+                    return False
 
-        #
-        for i in range(len(digests)):
-            bit = int(digests[i], 16)
-            if self.bit_array[bit] == False:
-                return False
+            return True
 
-        return True
+        else:
+            result = hashlib.sha256(item.encode())
+            digest = result.hexdigest()
+            n = 2
+            digests = [digest[i:i + n] for i in range(0, len(digest), n)]
+
+            for i in range(len(digests)):
+                bit = int(digests[i], 16)
+                if self.bit_array[bit] == False:
+                    return False
+
+            return True
 
 
 
