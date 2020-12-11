@@ -98,13 +98,39 @@ class SearchableEncryptionScheme():
         '''
         Create a bloom filter and insert the codewords into the bloom filter
         '''
+        # Creates a bloom filter and prints the stats
         bf = BloomFilter(len(codewords))
         print("Size of bit array: {}".format(bf.size))
         print("Size of numbers of items in the bloom filter (n)", len(codewords))
         print("False positive probability: {:.6%}".format(bf.fp_prob))
         print("Number of hash functions:{}".format(bf.hash_count))
 
-        # for codeword in codewords:
+        # For each hash value in the list of codewords, add the codeword to the bloom filter
+        for codeword in codewords:
+            bf.add(codeword)
+
+        # Test the bloom filter - Check if trapdoor returns true
+        count = 0
+        for word in trapdoor:
+            if bf.check(word):
+                count += 1
+                print("False Positive")
+            else:
+                print("Not Found")
+        print(count)
+
+        # Test the bloom filter - Check if each codeword returns true
+        count = 0
+        for word in codewords:
+            if bf.check(word):
+                print("Found!")
+            else:
+                print("Error")
+                count += 1
+        print("Errors found" + str(count))
+
+
+
 
 
         print("This is the list of trapdoors: " + str(trapdoor))
