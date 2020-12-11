@@ -1,6 +1,10 @@
 import hmac
 import hashlib
 import secrets
+import math
+from math import *
+from bitarray import bitarray
+from bloomfilter import BloomFilter
 
 class SearchableEncryptionScheme():
 
@@ -80,7 +84,6 @@ class SearchableEncryptionScheme():
             Take the trapdoor and create a codeword for each word in list_of_words
             '''
 
-
             # Take each word and hash it again with the dociment_identifier as the key to generate y1, y2, ..., yr
             for i in range(0, self.r):
                 # encode the docunemt identifier and the trapdoor[i]
@@ -91,10 +94,29 @@ class SearchableEncryptionScheme():
                 codeword_digest = codeword_digest.hexdigest()
                 codewords.append(codeword_digest)
 
+        '''
+        Create a bloom filter and insert the codewords into the bloom filter
+        '''
+        bf = BloomFilter(len(codewords))
+        print("Size of bit array: {}".format(bf.size))
+        print("Size of numbers of items in the bloom filter (n)", len(codewords))
+        print("False positive probability: {:.6%}".format(bf.fp_prob))
+        print("Number of hash functions:{}".format(bf.hash_count))
+
+        
+
+
+            
+
+
+
         print("This is the list of trapdoors: " + str(trapdoor))
         print(len(trapdoor))
         print("This is the list of codewords: " + str(codewords))
         print(len(codewords))
+
+
+
 
 
 
