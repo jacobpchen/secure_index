@@ -10,8 +10,8 @@ print("These are the keys: " + str(keys))
 build_index = []
 
 build_index.append(sse.build_index('document1', keys, ['apples', 'bananas', 'oranges', 'pears', 'groceries', 'shopping', 'list']))
-print(type(build_index))
+print("This is the type for build index", type(build_index))
 print(build_index)
 
-trapdoors = sse.trapdoor(keys, 'bananas')
-
+trapdoors = sse.trapdoor(keys, 'oranges')
+print(sse.searchIndex(trapdoors, build_index))
