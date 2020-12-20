@@ -28,9 +28,6 @@ class SearchableEncryptionScheme():
             # print("The digest size is: " + str(hmac_digest.digest_size))
             print(hmac_digest.digest())
 
-            '''
-            Does it matter that it returns 40 bytes instead of 20?
-            '''
             # convert the digest from a bytes to hex
             hmac_digest = hmac_digest.hexdigest()
 
@@ -89,7 +86,7 @@ class SearchableEncryptionScheme():
             Take the trapdoor and create a codeword for each word in list_of_words
             '''
 
-            # Take each word and hash it again with the dociment_identifier as the key to generate y1, y2, ..., yr
+            # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
             for i in range(0, self.r):
                 # encode the docunemt identifier and the trapdoor[i]
                 d_id = bytes(document_identifier, 'utf-8')
@@ -117,6 +114,7 @@ class SearchableEncryptionScheme():
             # print("Adding: " + str(codeword))
             bf.add(codeword)
 
+        '''
         # Test the bloom filter - Check if trapdoor returns true
         count = 0
         for word in trapdoor:
@@ -136,11 +134,12 @@ class SearchableEncryptionScheme():
                 count += 1
 
         print("Errors found " + str(count))
+        '''
 
+        return(document_identifier, bf)
 
-        return(bf)
-
-
+    def searchIndex(self, word):
+        print('hello')
 
 
 
