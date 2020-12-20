@@ -92,11 +92,11 @@ class BloomFilter(object):
                 # print(str(bit) + ' ', end='')
                 self.bit_array[bit] = True
         else:
-            result = hashlib.sha256(item.encode())
+            # result = hashlib.sha256(item.encode())
             # print("The hexadecimal equilvalent of SHA256 is:")
-            digest = result.hexdigest()
+            digest = item
             #print(len(digest))
-            # print("This is the digest AFTER ENCRYPTING: " + str(digest))
+            print("This is the digest for codeword: " + str(digest))
 
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
@@ -119,6 +119,7 @@ class BloomFilter(object):
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
 
             for i in range(self.hash_count):
+                print('checking for: ', digests[i])
                 bit = int(digests[i], 16)
                 if self.bit_array[bit] == False:
                     return False
@@ -126,19 +127,47 @@ class BloomFilter(object):
             return True
 
         else:
-            result = hashlib.sha256(item.encode())
-            digest = result.hexdigest()
-            # print("This is the digest after encrypting (CHECK): " + str(digest))
+            # result = hashlib.sha256(item.encode())
+            for i in range(0, len(item)):
+                digest = item[i]
+
+                print("This is the digest I am checking: " + str(digest))
+                n = 2
+                digests = [digest[i:i + n] for i in range(0, len(digest), n)]
+
+                for i in range(self.hash_count):
+                    # print('checking for: ', digests[i])
+                    bit = int(digests[i], 16)
+                    if self.bit_array[bit] == False:
+                        return False
+
+                return True
+
+            '''
+            Convert the digest into a trapdoor
+            '''
+
+
+            '''
+            Convert the trapdoor into codeword
+            '''
+
+            '''
+            Check the codeword
+            '''
+            '''
+            print("This is the digest I am checking: " + str(digest))
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
 
             for i in range(self.hash_count):
+                #print('checking for: ', digests[i])
                 bit = int(digests[i], 16)
                 if self.bit_array[bit] == False:
                     return False
 
             return True
-
+            '''
 
 
 
