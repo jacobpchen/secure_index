@@ -138,8 +138,38 @@ class SearchableEncryptionScheme():
 
         return(document_identifier, bf)
 
-    def searchIndex(self, word):
-        print('hello')
+    def searchIndex(self, trapdoor, secure_index):
+        print(trapdoor)
+        print(type(trapdoor))
+        print(secure_index)
+        print(type(secure_index))
+
+        # Create a list to store the codewords
+        codewords = []
+
+        '''
+        Take the trapdoor and create a codeword for each word in list_of_words
+        '''
+
+        # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
+        for i in range(0, self.r):
+            # encode the document identifier and the trapdoor[i]
+            print("This is secure index sub 0", secure_index[0][0])
+
+            # Convert the list to tuples
+            d_id = bytes(secure_index[0][0], 'utf-8')
+            print("This is the trapdoor[i]", trapdoor[i])
+            message = bytes(trapdoor[i], 'utf-8')
+
+            codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
+            codeword_digest = codeword_digest.hexdigest()
+            codewords.append(codeword_digest)
+
+        print("These are the codewords: " + str(codewords))
+
+        if secure_index[0][1].check(codewords):
+            return True
+        return False
 
 
 
