@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import secrets
 import math
+import glob
 from math import *
 from bitarray import bitarray
 from bloomfilter import BloomFilter
@@ -33,7 +34,6 @@ class SearchableEncryptionScheme():
 
             kpriv.append(hmac_digest)
 
-        # hmac digest 20 bytes length
         print(kpriv)
         return kpriv
 
@@ -90,6 +90,7 @@ class SearchableEncryptionScheme():
             for i in range(0, self.r):
                 # encode the docunemt identifier and the trapdoor[i]
                 d_id = bytes(document_identifier, 'utf-8')
+                print(type(d_id))
                 message = bytes(trapdoor[i], 'utf-8')
 
                 codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
@@ -158,6 +159,7 @@ class SearchableEncryptionScheme():
 
             # Convert the list to tuples
             d_id = bytes(secure_index[0][0], 'utf-8')
+            print(type(d_id))
             print("This is the trapdoor[i]", trapdoor[i])
             message = bytes(trapdoor[i], 'utf-8')
 
@@ -170,6 +172,24 @@ class SearchableEncryptionScheme():
         if secure_index[0][1].check(codewords):
             return True
         return False
+
+    def read_files(self):
+        print("Using glob.glob()")
+        files = glob.glob('recipes/**/*.doc', recursive = True)
+        for file in files:
+            '''
+            For each file in the recipes folder, filter the files with a .doc extension,
+            open the file, read the file and create a set of unique words, calculate average,
+            used to calculate the "noise" 
+            '''
+
+            #close files
+            print(file)
+
+        for file in files:
+
+
+        print(len(files))
 
 
 
