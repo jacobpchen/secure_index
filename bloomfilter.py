@@ -96,7 +96,7 @@ class BloomFilter(object):
             # print("The hexadecimal equilvalent of SHA256 is:")
             digest = item
             #print(len(digest))
-            print("This is the digest for codeword: " + str(digest))
+            # print("This is the digest for codeword: " + str(digest))
 
             n = 2
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
