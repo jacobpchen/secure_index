@@ -173,7 +173,7 @@ class SearchableEncryptionScheme():
             return True
         return False
 
-    def read_files(self):
+    def calculate_noise(self):
         average_unique_words = 0
 
         print("Using glob.glob()")
@@ -182,7 +182,7 @@ class SearchableEncryptionScheme():
             '''
             For each file in the recipes folder, filter the files with a .doc extension,
             open the file, read the file and create a set of unique words, calculate average,
-            used to calculate the "noise" 
+            return the average to calculate the "noise" 
             '''
             unique_words = set()
             print(file)
@@ -193,14 +193,17 @@ class SearchableEncryptionScheme():
                         unique_words.add(word)
             print(len(unique_words))
             average_unique_words += len(unique_words)
-            # to reset the EOF
-            # file.seek(0)
-            # file.read()
-
-            #close files
+            f.close()
         print(len(files))
         print(files)
-        print("The average unique words are:", int(average_unique_words / len(files)))
+        return int(average_unique_words / len(files))
+
+    '''
+    Helper Functions
+    '''
+    def set_r(self, r):
+        self.r = r
+        print(self.r)
 
 
 
