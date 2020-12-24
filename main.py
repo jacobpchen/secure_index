@@ -6,7 +6,9 @@ print("These are the keys: " + str(keys))
 
 # Call function to open a directory and scan all doc files for unique words.
 # Calculate the average for noise
-sse.read_files()
+average_unique_words = sse.calculate_noise()
+# sse.set_r(average_unique_words)
+
 
 
 # Build index is a list of tuples containing the bloom filter and the document unique identifier.
