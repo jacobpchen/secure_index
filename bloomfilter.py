@@ -1,4 +1,5 @@
 import math
+import random
 from math import *
 import hashlib
 from bitarray import bitarray
@@ -15,6 +16,8 @@ class BloomFilter(object):
         # Size of bit array to use
         self.fp_prob = .0001
         self.size = self.get_size(items_count, self.fp_prob)
+        print(items_count)
+        print(self.size)
 
         # Number of items to add to the bloom filter
         self.items_count = items_count
@@ -143,6 +146,14 @@ class BloomFilter(object):
 
                 return True
 
+    def set_index(self, index):
+        while (1):
+            print("Setting: ", index, "true")
+            if self.bit_array[index] == False:
+                self.bit_array[index] = True
+                break
+            else:
+                index = random.randrange(0, self.size)
 
 
 
