@@ -142,13 +142,14 @@ class BloomFilter(object):
                     # print('checking for: ', digests[i])
                     bit = int(digests[i], 16)
                     if self.bit_array[bit] == False:
-                        return False
+                        break
+                    return False
 
-                return True
+            return True
 
     def set_index(self, index):
         while (1):
-            print("Setting: ", index, "true")
+            # print("Setting: ", index, "true")
             if self.bit_array[index] == False:
                 self.bit_array[index] = True
                 break
