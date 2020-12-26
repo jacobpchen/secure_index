@@ -11,18 +11,18 @@ print(doc_identifier_and_unique_words)
 
 # Build index is a list of tuples containing the bloom filter and the document unique identifier.
 build_index = []
+
 '''
 for index, tuple in enumerate(doc_identifier_and_unique_words):
     doc_id = tuple[0]
     unique_words = tuple[1]
-    build_index.append(sse.build_index(doc_id, keys, unique_words))
+    total_word_count = tuple[2]
+    build_index.append(sse.build_index(doc_id, keys, unique_words, total_word_count))
 '''
-
-
-build_index.append(sse.build_index('document1', keys, ['oranges', 'bananas', 'apples', 'pears', 'groceries', 'shopping', 'list']))
+build_index.append(sse.build_index('document1', keys, ['oranges', 'bananas', 'apples', 'pears', 'groceries', 'shopping', 'list'], 8))
 print("This is the type for build index", type(build_index))
-print(build_index)
+print("This is how many BF's there are: ", len(build_index))
 
 # Stuck here - Codewords aren't matching up
-trapdoors = sse.trapdoor(keys, 'oranges')
+trapdoors = sse.trapdoor(keys, 'stir')
 print(sse.searchIndex(trapdoors, build_index))
