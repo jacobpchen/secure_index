@@ -24,7 +24,7 @@ The application implements 4 main functions:
 - Keygen(size): Given a size parameter in bytes generates a key in hexadecimal that is double the size. The default setting is 20 bytes. The key that is generated is 40 bytes long which matches the HMAC-SHA1 digest. Returns a list of keys (kpriv).
 - Trapdoor(kpriv, *w*): Given the list of keys and word *w*, outputs the trapdoor Tw for *w*. 
 - BuildIndex(D, Kpriv): Given a unique document identifier (i.e. file name) creates a list of codewords to insert into the document's bloom filter. Returns the document bloom filter to be stored in a list of bloom filters (I_Did).
-- SearchIndex(Tw, I_Did): The input is the trapdoor generated from the trapdoor function for word *w* and the list of bloom filters (I_Did). Calculates the codeword for w and searches in linear time if the list of bloom filters (I~Did~) contains the codewords. Return 1 or 0 and the document identifier.
+- SearchIndex(Tw, I_Did): The input is the trapdoor generated from the trapdoor function for word *w* and the list of bloom filters (I_Did). Calculates the codeword for w and searches in linear time if the list of bloom filters (I_Did) contains the codewords. Return 1 or 0 and the document identifier.
 
 #### Things to add
 - [ ] High level flow diagram
