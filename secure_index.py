@@ -90,7 +90,7 @@ class SearchableEncryptionScheme():
             for i in range(0, self.r):
                 # encode the docunemt identifier and the trapdoor[i]
                 d_id = bytes(document_identifier, 'utf-8')
-                print(type(d_id))
+                # print(type(d_id))
                 message = bytes(trapdoor[i], 'utf-8')
 
                 codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
@@ -114,28 +114,6 @@ class SearchableEncryptionScheme():
         for codeword in codewords:
             # print("Adding: " + str(codeword))
             bf.add(codeword)
-
-        '''
-        # Test the bloom filter - Check if trapdoor returns true
-        count = 0
-        for word in trapdoor:
-            # print("Checking: " + str(word))
-            if bf.check(word):
-                count += 1
-                print("False Positive")
-
-        print("Errors found " + str(count))
-
-        # Test the bloom filter - Check if each codeword returns true
-        count = 0
-        for word in codewords:
-            # print("Checking: " + str(word))
-            if not bf.check(word):
-                print("Error")
-                count += 1
-
-        print("Errors found " + str(count))
-        '''
 
         return(document_identifier, bf)
 
@@ -173,37 +151,30 @@ class SearchableEncryptionScheme():
             return True
         return False
 
-    def calculate_noise(self):
-        average_unique_words = 0
-
-        print("Using glob.glob()")
-        files = glob.glob('recipes/**/*.txt', recursive = True)
-        for file in files:
-            '''
-            For each file in the recipes folder, filter the files with a .doc extension,
-            open the file, read the file and create a set of unique words, calculate average,
-            return the average to calculate the "noise" 
-            '''
-            unique_words = set()
-            print(file)
-            f = open(file, 'r')
-            for line in f:
-                for word in line.split():
-                    if word not in unique_words:
-                        unique_words.add(word)
-            print(len(unique_words))
-            average_unique_words += len(unique_words)
-            f.close()
-        print(len(files))
-        print(files)
-        return int(average_unique_words / len(files))
 
     '''
     Helper Functions
     '''
-    def set_r(self, r):
-        self.r = r
-        print(self.r)
+    def get_unique_words(self):
+        print("Using glob.glob()")
+        all_unique_words = []
+        document_number = 1
+        files = glob.glob('recipes/**/*.txt', recursive=True)
+
+        for file in files:
+            document_identifier = 'document' + str(document_number)
+            document_number += 1
+            unique_words_in_document = set()
+            print(file)
+            f = open(file, 'r')
+            for line in f:
+                for word in line.split():
+                    if word not in unique_words_in_document:
+                        unique_words_in_document.add(word)
+            f.close()
+
+            all_unique_words.append((document_identifier, unique_words_in_document))
+        return all_unique_words
 
 
 
