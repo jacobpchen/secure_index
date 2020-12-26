@@ -69,7 +69,7 @@ class SearchableEncryptionScheme():
             '''
             Create a trapdoor for each unique word
             '''
-            print("Creating trapdoor for: " + str(word))
+            # print("Creating trapdoor for: " + str(word))
 
             # Takes the word and creates a trapdoor
             for i in range(0,self.r):
@@ -113,7 +113,7 @@ class SearchableEncryptionScheme():
 
         # For each hash value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
-            print("Adding the codeword: " + str(codeword), "to the BF")
+            # print("Adding the codeword: " + str(codeword), "to the BF")
             bf.add(codeword)
 
         # adding noise - take the total number of words - unique words * r and insert into bloom filter
@@ -132,7 +132,8 @@ class SearchableEncryptionScheme():
         print(trapdoor)
         print(type(trapdoor))
         print(secure_index)
-        print(type(secure_index))
+        print(len(secure_index))
+        print("The type for secure index is:" , type(secure_index[0][1]))
 
         # Create a list to store the codewords
         codewords = []
@@ -144,12 +145,12 @@ class SearchableEncryptionScheme():
         # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
         for i in range(0, self.r):
             # encode the document identifier and the trapdoor[i]
-            print("This is secure index sub 0", secure_index[0][0])
-
+            # print("This is secure index sub 0", secure_index[0][0])
+            # print("This is secure index[0][1]", secure_index[0][1])
             # Convert the list to tuples
             d_id = bytes(secure_index[0][0], 'utf-8')
-            print(type(d_id))
-            print("This is the trapdoor[i]", trapdoor[i])
+            # print(type(d_id))
+            # print("This is the trapdoor[i]", trapdoor[i])
             message = bytes(trapdoor[i], 'utf-8')
 
             codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
@@ -158,10 +159,14 @@ class SearchableEncryptionScheme():
 
         print("These are the codewords: " + str(codewords))
 
-        if secure_index[0][1].check(codewords):
-            return True
+        count = 0
+        for i in range(0, len(secure_index)):
+            print(i)
+            print(type(i))
+            print(secure_index[i][1])
+            if secure_index[i][1].check(codewords):
+                return True
         return False
-
 
     '''
     Helper Functions
