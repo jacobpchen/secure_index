@@ -143,35 +143,6 @@ class BloomFilter(object):
 
                 return True
 
-            '''
-            Convert the digest into a trapdoor
-            '''
-
-
-            '''
-            Convert the trapdoor into codeword
-            '''
-
-            '''
-            Check the codeword
-            '''
-            '''
-            print("This is the digest I am checking: " + str(digest))
-            n = 2
-            digests = [digest[i:i + n] for i in range(0, len(digest), n)]
-
-            for i in range(self.hash_count):
-                #print('checking for: ', digests[i])
-                bit = int(digests[i], 16)
-                if self.bit_array[bit] == False:
-                    return False
-
-            return True
-            '''
-
-
-
-
 
 
 
