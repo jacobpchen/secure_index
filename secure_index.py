@@ -3,6 +3,7 @@ import hashlib
 import secrets
 import math
 import glob
+import random
 from math import *
 from bitarray import bitarray
 from bloomfilter import BloomFilter
@@ -57,7 +58,7 @@ class SearchableEncryptionScheme():
 
         return tw
 
-    def build_index(self, document_identifier, kpriv, list_of_words):
+    def build_index(self, document_identifier, kpriv, list_of_words, total_word_count):
         print(list_of_words)
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
         trapdoor = []
@@ -104,7 +105,7 @@ class SearchableEncryptionScheme():
         Create a bloom filter and insert the codewords into the bloom filter
         '''
         # Creates a bloom filter and prints the stats
-        bf = BloomFilter(len(codewords))
+        bf = BloomFilter(len(codewords) + 5)
         print("Size of bit array: {}".format(bf.size))
         print("Size of numbers of items in the bloom filter (n)", len(codewords))
         print("False positive probability: {:.6%}".format(bf.fp_prob))
@@ -112,8 +113,18 @@ class SearchableEncryptionScheme():
 
         # For each hash value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
-            # print("Adding: " + str(codeword))
+            print("Adding the codeword: " + str(codeword), "to the BF")
             bf.add(codeword)
+
+        # adding noise - take the total number of words - unique words * r and insert into bloom filter
+        print(total_word_count)
+        print(len(list_of_words))
+        print((total_word_count - len(list_of_words)) * self.r)
+        for i in range (0, (total_word_count - len(list_of_words)) * self.r):
+            # generate a random number from 0 - bf.size
+            index = random.randrange(0, bf.size-1)
+            bf.set_index(index)
+
 
         return(document_identifier, bf)
 
@@ -164,6 +175,7 @@ class SearchableEncryptionScheme():
         for file in files:
             document_identifier = 'document' + str(document_number)
             document_number += 1
+            total_word_count = 0
             unique_words_in_document = set()
             print(file)
             f = open(file, 'r')
@@ -171,9 +183,14 @@ class SearchableEncryptionScheme():
                 for word in line.split():
                     if word not in unique_words_in_document:
                         unique_words_in_document.add(word)
+                        total_word_count += 1
+                    else:
+                        total_word_count += 1
             f.close()
+            print("The total word count for: ", document_identifier,  str(total_word_count))
+            print("The unique words for: ", document_identifier, str(len(unique_words_in_document)))
 
-            all_unique_words.append((document_identifier, unique_words_in_document))
+            all_unique_words.append((document_identifier, unique_words_in_document, total_word_count))
         return all_unique_words
 
 
