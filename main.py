@@ -11,21 +11,18 @@ print(doc_identifier_and_unique_words)
 
 # Build index is a list of tuples containing the bloom filter and the document unique identifier
 # i.e. ('document1', document1 bf, 'document2', document2 bf, ...)
-build_index = []
+index = []
 
-'''
-for index, tuple in enumerate(doc_identifier_and_unique_words):
+for i, tuple in enumerate(doc_identifier_and_unique_words):
     doc_id = tuple[0]
     unique_words = tuple[1]
-    total_word_count = tuple[2]
-    build_index.append(sse.build_index(doc_id, keys, unique_words, total_word_count))
-'''
+    highest_word_count = tuple[2]
+    index.append(sse.build_index(doc_id, keys, unique_words, highest_word_count))
 
+# index.append(sse.build_index('document1', keys, ['bananas', 'oranges', 'apples', 'pears', 'groceries', 'shopping', 'list'], 8))
 
-build_index.append(sse.build_index('document1', keys, ['bananas', 'oranges', 'apples', 'pears', 'groceries', 'shopping', 'list'], 8))
-print("This is the type for build index", type(build_index))
-print("This is how many BF's there are: ", len(build_index))
+print("This is the type for build index", type(index))
+print("This is how many BF's there are: ", len(index))
 
-# Stuck here - Codewords aren't matching up
-trapdoors = sse.trapdoor(keys, 'oranges')
-print(sse.searchIndex(trapdoors, build_index))
+trapdoors = sse.trapdoor(keys, 'herb')
+print(sse.searchIndex(trapdoors, index))
