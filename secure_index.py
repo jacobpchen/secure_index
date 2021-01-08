@@ -17,6 +17,9 @@ class SearchableEncryptionScheme():
         # number of functions
         self.r = 5
 
+        # highest word count
+        self.highest_word_count = 0
+
     def keygen(self, size):
         # Generates a master_key of size bytes
         master_key = secrets.token_bytes(size)
@@ -59,7 +62,7 @@ class SearchableEncryptionScheme():
         print("These are the trapdoors: " , tw)
         return tw
 
-    def build_index(self, document_identifier, kpriv, list_of_words, total_word_count):
+    def build_index(self, document_identifier, kpriv, list_of_words, highest_word_count):
         print(list_of_words)
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
         trapdoor = []
@@ -88,20 +91,27 @@ class SearchableEncryptionScheme():
         Take the trapdoor and create a codeword for each word in list_of_words
         '''
 
+
+        '''
+        Error was here - my loop to create a codeword would take ONLY the first word and add it 5 times. 
+        I changed it so that I now generate ALL trapdoors then I use another loop to generate codewords
+        instead of word by word        
+        '''
+
         # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
         for i in range(0, len(trapdoor)):
             # encode the docunemt identifier and the trapdoor[i]
             d_id = bytes(document_identifier, 'utf-8')
             # print(type(d_id))
             message = bytes(trapdoor[i], 'utf-8')
-            print("This is trapdoor",i,  trapdoor[i])
-            print("This is the message", message)
+            # print("This is trapdoor",i,  trapdoor[i])
+            # print("This is the message", message)
 
             codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
             codeword_digest = codeword_digest.hexdigest()
-            print("This is the codeword digest", codeword_digest)
+            # print("This is the codeword digest", codeword_digest)
             codewords.append(codeword_digest)
-            print("This is the len of codewords: ", len(codewords))
+            # print("This is the len of codewords: ", len(codewords))
 
         print("These are the trapdoors: " + str(trapdoor))
         print("These are the codewords: " + str(codewords))
@@ -119,17 +129,21 @@ class SearchableEncryptionScheme():
             # print("Adding the codeword: " + str(codeword), "to the BF")
             bf.add(codeword)
 
-        print("This is the list of true bits", bf.true_bits)
+        print("This is the list of true bits BEFORE", bf.true_bits)
+        print("This is the size of true bits BEFORE", int(len(bf.true_bits)))
 
         # adding noise - take the total number of words - unique words * r and insert into bloom filter
-        print(total_word_count)
+        print("The highest word count is: ", self.highest_word_count)
         print(len(list_of_words))
-        print((total_word_count - len(list_of_words)) * self.r)
-        for i in range (0, (total_word_count - len(list_of_words)) * self.r):
+        print((self.highest_word_count - len(list_of_words)) * self.r)
+        for i in range (0, (self.highest_word_count - len(list_of_words)) * self.r):
             # generate a random number from 0 - bf.size
             index = random.randrange(0, bf.size-1)
             bf.set_index(index)
+            bf.true_bits.append(index)
 
+        print("This is the list of true bits AFTER", bf.true_bits)
+        print("This is the size of true bits AFTER", int(len(bf.true_bits)))
 
         return(document_identifier, bf)
 
@@ -201,10 +215,16 @@ class SearchableEncryptionScheme():
                     else:
                         total_word_count += 1
             f.close()
+
+            if total_word_count > self.highest_word_count:
+                self.highest_word_count = total_word_count
+
             print("The total word count for: ", document_identifier,  str(total_word_count))
             print("The unique words for: ", document_identifier, str(len(unique_words_in_document)))
 
             all_unique_words.append((document_identifier, unique_words_in_document, total_word_count))
+
+        print(self.highest_word_count)
         return all_unique_words
 
 
