@@ -20,22 +20,22 @@ class SearchableEncryptionScheme():
     def keygen(self, size):
         # Generates a master_key of size bytes
         master_key = secrets.token_bytes(size)
-        print(len(master_key))
+        # print(len(master_key))
 
         # Create an empty list to hold the kpriv
         kpriv = []
         for i in range (0, self.r):
             # Generate r keys and stores it in kpriv
             hmac_digest = hmac.new(master_key, msg=secrets.token_bytes(size), digestmod=hashlib.sha1)
-            # print("The digest size is: " + str(hmac_digest.digest_size))
-            print(hmac_digest.digest())
+            #print("The digest size is: " + str(hmac_digest.digest_size))
+            #print(hmac_digest.digest())
 
             # convert the digest from a bytes to hex
             hmac_digest = hmac_digest.hexdigest()
 
             kpriv.append(hmac_digest)
 
-        print(kpriv)
+        # print(kpriv)
         return kpriv
 
     def trapdoor(self, kpriv, word):
@@ -53,9 +53,10 @@ class SearchableEncryptionScheme():
 
             trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
             trapdoor_digest = trapdoor_digest.hexdigest()
-            print(trapdoor_digest)
+            # print("This is the trapdoor digest" , trapdoor_digest)
             tw.append(trapdoor_digest)
 
+        print("These are the trapdoors: " , tw)
         return tw
 
     def build_index(self, document_identifier, kpriv, list_of_words, total_word_count):
@@ -81,22 +82,26 @@ class SearchableEncryptionScheme():
                 trapdoor_digest = trapdoor_digest.hexdigest()
                 trapdoor.append(trapdoor_digest)
 
-            #print(trapdoor)
+        print(trapdoor)
 
-            '''
-            Take the trapdoor and create a codeword for each word in list_of_words
-            '''
+        '''
+        Take the trapdoor and create a codeword for each word in list_of_words
+        '''
 
-            # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
-            for i in range(0, self.r):
-                # encode the docunemt identifier and the trapdoor[i]
-                d_id = bytes(document_identifier, 'utf-8')
-                # print(type(d_id))
-                message = bytes(trapdoor[i], 'utf-8')
+        # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
+        for i in range(0, len(trapdoor)):
+            # encode the docunemt identifier and the trapdoor[i]
+            d_id = bytes(document_identifier, 'utf-8')
+            # print(type(d_id))
+            message = bytes(trapdoor[i], 'utf-8')
+            print("This is trapdoor",i,  trapdoor[i])
+            print("This is the message", message)
 
-                codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
-                codeword_digest = codeword_digest.hexdigest()
-                codewords.append(codeword_digest)
+            codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
+            codeword_digest = codeword_digest.hexdigest()
+            print("This is the codeword digest", codeword_digest)
+            codewords.append(codeword_digest)
+            print("This is the len of codewords: ", len(codewords))
 
         print("These are the trapdoors: " + str(trapdoor))
         print("These are the codewords: " + str(codewords))
@@ -108,13 +113,13 @@ class SearchableEncryptionScheme():
         bf = BloomFilter(len(codewords) + 5)
         print("Size of bit array: {}".format(bf.size))
         print("Size of numbers of items in the bloom filter (n)", len(codewords))
-        print("False positive probability: {:.6%}".format(bf.fp_prob))
-        print("Number of hash functions:{}".format(bf.hash_count))
 
         # For each hash value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
             # print("Adding the codeword: " + str(codeword), "to the BF")
             bf.add(codeword)
+
+        print("This is the list of true bits", bf.true_bits)
 
         # adding noise - take the total number of words - unique words * r and insert into bloom filter
         print(total_word_count)
@@ -145,16 +150,20 @@ class SearchableEncryptionScheme():
         # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
         for i in range(0, self.r):
             # encode the document identifier and the trapdoor[i]
-            # print("This is secure index sub 0", secure_index[0][0])
-            # print("This is secure index[0][1]", secure_index[0][1])
-            # Convert the list to tuples
+            print("This is secure index sub 0", secure_index[0][0])
+            print("This is secure index[0][1]", secure_index[0][1])
+
             d_id = bytes(secure_index[0][0], 'utf-8')
             # print(type(d_id))
             # print("This is the trapdoor[i]", trapdoor[i])
+            print("Trapdoor[i] is:", trapdoor[i])
             message = bytes(trapdoor[i], 'utf-8')
+            print("This is trapdoor[i]", trapdoor[i])
+            print("This is the message", message)
 
-            codeword_digest = hmac.new(d_id, msg=message, digestmod=hashlib.sha1)
+            codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
             codeword_digest = codeword_digest.hexdigest()
+            print("This is the codeword_digest", codeword_digest)
             codewords.append(codeword_digest)
 
         print("These are the codewords: " + str(codewords))
@@ -165,7 +174,7 @@ class SearchableEncryptionScheme():
             print(type(i))
             print(secure_index[i][1])
             if secure_index[i][1].check(codewords):
-                return True
+                return True, d_id
         return False
 
     '''
