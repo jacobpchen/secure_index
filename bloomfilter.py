@@ -30,7 +30,7 @@ class BloomFilter(object):
         digests = [digest[i:i + n] for i in range(0, len(digest), n)]
         # print(digests)
         last_two_bytes_digest = digests[len(digests)-1]
-
+        #print(last_two_bytes_digest)
         # Convert to the 10 hexadecimal digit to an integer between 0 - m
         bit = int(last_two_bytes_digest, 16)
         self.bit_array[bit] = True
@@ -38,16 +38,16 @@ class BloomFilter(object):
         self.true_bits.append(bit)
 
     def check(self, item):
-            digest = item
-            print("This is the digest I am checking: " + str(digest))
+        for index in range(0, len(item)):
+            digest = item[index]
+            print(digest)
+
             n = 4
             digests = [digest[i:i + n] for i in range(0, len(digest), n)]
-            print(digests)
             last_two_bytes_digest = digests[len(digests) - 1]
-
+            # print(last_two_bytes_digest)
             bit = int(last_two_bytes_digest, 16)
             if self.bit_array[bit] == False:
-                # break
                 return False
 
             return True
