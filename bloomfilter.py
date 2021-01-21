@@ -19,8 +19,6 @@ class BloomFilter(object):
         # initialize all bits as 0
         self.bit_array.setall(0)
 
-        # Test var
-        self.true_bits = []
 
     def add(self, item):
         #Add an item in the filter
@@ -35,9 +33,9 @@ class BloomFilter(object):
         bit = int(last_two_bytes_digest, 16)
         self.bit_array[bit] = True
 
-        self.true_bits.append(bit)
-
     def check(self, item):
+        print("This is the item", item)
+        print(len(item))
         for index in range(0, len(item)):
             digest = item[index]
             print(digest)
@@ -50,7 +48,7 @@ class BloomFilter(object):
             if self.bit_array[bit] == False:
                 return False
 
-            return True
+        return True
 
     def set_index(self, index):
         while (1):

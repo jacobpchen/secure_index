@@ -16,13 +16,12 @@ index = []
 for i, tuple in enumerate(doc_identifier_and_unique_words):
     doc_id = tuple[0]
     unique_words = tuple[1]
-    highest_word_count = tuple[2]
-    index.append(sse.build_index(doc_id, keys, unique_words, highest_word_count))
-
-# index.append(sse.build_index('document1', keys, ['bananas', 'oranges', 'apples', 'pears', 'groceries', 'shopping', 'list'], 8))
+    unique_word_count = tuple[2]
+    print(doc_id, unique_words, unique_word_count)
+    index.append(sse.build_index(doc_id, keys, unique_words, unique_word_count))
 
 print("This is the type for build index", type(index))
 print("This is how many BF's there are: ", len(index))
 
-trapdoors = sse.trapdoor(keys, 'herb')
+trapdoors = sse.trapdoor(keys, 'chicken')
 print(sse.searchIndex(trapdoors, index))
