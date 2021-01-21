@@ -17,7 +17,7 @@ class SearchableEncryptionScheme():
         # number of functions
         self.r = 5
 
-        # highest word count
+        # unique word count
         self.unique_word_count = 0
 
     def keygen(self, size):
@@ -50,11 +50,9 @@ class SearchableEncryptionScheme():
             trapdoor_digest = trapdoor_digest.hexdigest()
             tw.append(trapdoor_digest)
 
-        print("These are the trapdoors: " , tw)
         return tw
 
     def build_index(self, document_identifier, kpriv, list_of_words, highest_word_count):
-        print(list_of_words)
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
         trapdoor = []
         # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
@@ -74,10 +72,6 @@ class SearchableEncryptionScheme():
                 trapdoor.append(trapdoor_digest)
 
         '''
-        Take the trapdoor and create a codeword for each word in list_of_words
-        '''
-
-        '''
         Error was here - my loop to create a codeword would take ONLY the first word and add it 5 times. 
         I changed it so that I now generate ALL trapdoors then I use another loop to generate codewords
         instead of word by word        
@@ -87,19 +81,10 @@ class SearchableEncryptionScheme():
         for i in range(0, len(trapdoor)):
             # encode the docunemt identifier and the trapdoor[i]
             d_id = bytes(document_identifier, 'utf-8')
-            # print(type(d_id))
             message = bytes(trapdoor[i], 'utf-8')
-            # print("This is trapdoor",i,  trapdoor[i])
-            # print("This is the message", message)
-
             codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
             codeword_digest = codeword_digest.hexdigest()
-            # print("This is the codeword digest", codeword_digest)
             codewords.append(codeword_digest)
-            # print("This is the len of codewords: ", len(codewords))
-
-        print("These are the trapdoors: " + str(trapdoor))
-        print("These are the codewords: " + str(codewords))
 
         '''
         Create a bloom filter and insert the codewords into the bloom filter
@@ -113,9 +98,6 @@ class SearchableEncryptionScheme():
             bf.add(codeword)
 
         # adding noise - take the total number of words - unique words * r and insert into bloom filter
-        print("The highest word count is: ", self.unique_word_count)
-        print(len(list_of_words))
-        print((self.unique_word_count - len(list_of_words)) * self.r)
         for i in range (0, (self.unique_word_count - len(list_of_words)) * self.r):
             # generate a random number from 0 - bf.size
             index = random.randrange(0, bf.size-1)
@@ -124,8 +106,6 @@ class SearchableEncryptionScheme():
         return(document_identifier, bf)
 
     def searchIndex(self, trapdoor, secure_index):
-        print(secure_index)
-        print(len(secure_index))
 
         # Create a documents set that will store the documents that return true from BF
         documents = set()
@@ -139,7 +119,6 @@ class SearchableEncryptionScheme():
             # Create a list to store the codewords for each document
             codewords = []
             d_id = bytes(secure_index[i][0], 'utf-8')
-            print(d_id)
 
             # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
             for i in range(0, self.r):
@@ -157,9 +136,6 @@ class SearchableEncryptionScheme():
                 # print("This is the codeword_digest", codeword_digest)
                 codewords.append(codeword_digest)
 
-            print("These are the codewords: " + str(codewords))
-            print(len(codewords))
-
             # Once you have the codewords for the specific document check it against ALL BF's
             for i in range (0, len(secure_index)):
                 if secure_index[i][1].check(codewords):
@@ -172,7 +148,6 @@ class SearchableEncryptionScheme():
     Helper Functions
     '''
     def get_unique_words(self):
-        print("Using glob.glob()")
         all_unique_words = []
         document_number = 1
         files = glob.glob('recipes/**/*.txt', recursive=True)
@@ -182,7 +157,6 @@ class SearchableEncryptionScheme():
             document_number += 1
             unique_word_count = 0
             unique_words_in_document = set()
-            #print(file)
             f = open(file, 'r')
             for line in f:
                 for word in line.split():
@@ -193,9 +167,7 @@ class SearchableEncryptionScheme():
 
             if unique_word_count > self.unique_word_count:
                 self.unique_word_count = unique_word_count+25
-            print("The unique words for: ", document_identifier, str(len(unique_words_in_document)))
 
             all_unique_words.append((document_identifier, unique_words_in_document, unique_word_count))
 
-        print(self.unique_word_count)
         return all_unique_words
