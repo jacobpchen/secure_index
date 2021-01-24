@@ -8,6 +8,8 @@ from math import *
 from bitarray import bitarray
 from bloomfilter import BloomFilter
 
+
+
 class SearchableEncryptionScheme():
 
     '''
@@ -52,7 +54,7 @@ class SearchableEncryptionScheme():
 
         return tw
 
-    def build_index(self, document_identifier, kpriv, list_of_words, highest_word_count):
+    def build_index(self, document_identifier, kpriv, list_of_words):
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
         trapdoor = []
         # Create an empty list to hold the codewords for the word (y1, y2, ..., yr)
@@ -92,9 +94,8 @@ class SearchableEncryptionScheme():
         # Creates a bloom filter and prints the stats
         bf = BloomFilter(len(codewords))
 
-        # For each hash value in the list of codewords, add the codeword to the bloom filter
+        # For each value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
-            # print("Adding the codeword: " + str(codeword), "to the BF")
             bf.add(codeword)
 
         # adding noise - take the total number of words - unique words * r and insert into bloom filter
@@ -110,11 +111,6 @@ class SearchableEncryptionScheme():
         # Create a documents set that will store the documents that return true from BF
         documents = set()
 
-        '''
-        When searching the index should I am currently creating a codeword for each of the documents
-        saving it to a list 
-        '''
-
         for i in range(0, len(secure_index)):
             # Create a list to store the codewords for each document
             codewords = []
@@ -123,17 +119,9 @@ class SearchableEncryptionScheme():
             # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
             for i in range(0, self.r):
                 # encode the document identifier and the trapdoor[i]
-                #print("This is secure index sub 0", secure_index[0][0])
-                #print("This is secure index[0][1]", secure_index[0][1])
-                #d_id = bytes(secure_index[i][0], 'utf-8')
-
-                # print("This is the trapdoor[i]", trapdoor[i])
                 message = bytes(trapdoor[i], 'utf-8')
-                # print("This is trapdoor[i]", trapdoor[i])
-
                 codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
                 codeword_digest = codeword_digest.hexdigest()
-                # print("This is the codeword_digest", codeword_digest)
                 codewords.append(codeword_digest)
 
             # Once you have the codewords for the specific document check it against ALL BF's
@@ -142,7 +130,6 @@ class SearchableEncryptionScheme():
                     documents.add(d_id)
 
         return documents
-
 
     '''
     Helper Functions
@@ -169,5 +156,9 @@ class SearchableEncryptionScheme():
                 self.unique_word_count = unique_word_count+25
 
             all_unique_words.append((document_identifier, unique_words_in_document, unique_word_count))
+
+        # Create an encrypted file
+
+
 
         return all_unique_words

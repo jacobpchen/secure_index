@@ -23,11 +23,11 @@ class BloomFilter(object):
     def add(self, item):
         #Add an item in the filter
         digest = item
+
         # separate the digest into 2 bytes
         n = 4
         digests = [digest[i:i + n] for i in range(0, len(digest), n)]
         last_two_bytes_digest = digests[len(digests)-1]
-        #print(last_two_bytes_digest)
         # Convert to the 10 hexadecimal digit to an integer between 0 - m
         bit = int(last_two_bytes_digest, 16)
         self.bit_array[bit] = True

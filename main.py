@@ -13,8 +13,15 @@ index = []
 for i, tuple in enumerate(doc_identifier_and_unique_words):
     doc_id = tuple[0]
     unique_words = tuple[1]
-    unique_word_count = tuple[2]
-    index.append(sse.build_index(doc_id, keys, unique_words, unique_word_count))
+    index.append(sse.build_index(doc_id, keys, unique_words))
 
-trapdoors = sse.trapdoor(keys, 'chicken')
+'''
+Ask user to select folder path
+Accept multiple words? chicken pesto (search once for chicken then search only those docs for pesto?)
+'''
+
+search_keyword = input("Enter your search: ")
+# change to lower case for search keyword
+
+trapdoors = sse.trapdoor(keys, search_keyword)
 print(sse.searchIndex(trapdoors, index))
