@@ -107,36 +107,9 @@ class SearchableEncryptionScheme():
 
     def searchIndex(self, trapdoor, secure_index):
 
-        
+        if self.boolean_query == None:
+            return self.search_using_none(trapdoor, secure_index)
 
-        # Create a documents set that will store the documents that return true from BF
-        documents = set()
-
-        for i in range(0, len(secure_index)):
-            # Create a list to store the codewords for each document
-            codewords = []
-            d_id = bytes(secure_index[i][0], 'utf-8')
-
-            # Take each trapdoor and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
-            for i in range(0, self.r):
-                # encode the document identifier and the trapdoor[i]
-                message = bytes(trapdoor[i], 'utf-8')
-                codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
-                codeword_digest = codeword_digest.hexdigest()
-                codewords.append(codeword_digest)
-
-            # Once you have the codewords for the specific document check it against ALL BF's
-            for i in range (0, len(secure_index)):
-                if secure_index[i][1].check(codewords):
-                    documents.add(d_id)
-
-        # Convert the type of the documents from bytes to string
-        string_documents = []
-        bytes_documents = list(documents)
-        for i in range (0, len(documents)):
-            string_documents.append(bytes_documents[i].decode("utf-8"))
-
-        return string_documents
 
     '''
     Helper Functions
@@ -191,3 +164,35 @@ class SearchableEncryptionScheme():
                 tw.append(trapdoor_digest)
 
         return tw
+
+    def search_using_none(self, trapdoor, secure_index):
+        # Create a documents set that will store the documents that return true from BF
+        documents = set()
+        print(trapdoor)
+        print(secure_index)
+
+        for i in range(0, len(secure_index)):
+            # Create a list to store the codewords for each document
+            codewords = []
+            d_id = bytes(secure_index[i][0], 'utf-8')
+
+            # Take each trapdoor and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
+            for i in range(0, self.r):
+                # encode the document identifier and the trapdoor[i]
+                message = bytes(trapdoor[i], 'utf-8')
+                codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
+                codeword_digest = codeword_digest.hexdigest()
+                codewords.append(codeword_digest)
+
+            # Once you have the codewords for the specific document check it against ALL BF's
+            for i in range(0, len(secure_index)):
+                if secure_index[i][1].check(codewords):
+                    documents.add(d_id)
+
+        # Convert the type of the documents from bytes to string
+        string_documents = []
+        bytes_documents = list(documents)
+        for i in range(0, len(documents)):
+            string_documents.append(bytes_documents[i].decode("utf-8"))
+
+        return string_documents
