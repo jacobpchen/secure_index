@@ -1,23 +1,23 @@
 import os.path
+from os import path
 from cryptography.fernet import Fernet
 
 class Encryption():
     def __init__(self, filename, document_identifier):
         self.filename = filename
         self.document_identifier = document_identifier
-
-        # check if key exists
-        self.doesKeyExist = True
+        self.write_key()
 
     def write_key(self):
         """
         Generates a key and save it into a file
         """
-        if self.doesKeyExist == False:
+        # if self.doesKeyExist == False:
+        if path.isfile('key.key') == False:
             key = Fernet.generate_key()
             with open("key.key", "wb") as key_file:
                 key_file.write(key)
-            self.doesKeyExist = True
+                print(key)
 
     def load_key(self):
         """
@@ -28,7 +28,6 @@ class Encryption():
     def encrypt(self):
 
         key = self.load_key()
-        print(key)
         f = Fernet(key)
         with open(self.filename, 'rb') as file:
             plaintext_data = file.read()

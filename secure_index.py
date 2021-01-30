@@ -9,7 +9,6 @@ from bitarray import bitarray
 from bloomfilter import BloomFilter
 from encryption import Encryption
 
-
 class SearchableEncryptionScheme():
 
     '''
@@ -167,7 +166,6 @@ class SearchableEncryptionScheme():
 
             # Create an encrypted file and store it in the encrypted files folder
             encrypt = Encryption(file, document_identifier)
-            encrypt.write_key()
             encrypt.encrypt()
 
         return all_unique_words
