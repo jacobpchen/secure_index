@@ -1,4 +1,5 @@
 from secure_index import SearchableEncryptionScheme
+from decryption import Decryption
 
 sse = SearchableEncryptionScheme()
 keys = sse.keygen(20)
@@ -26,3 +27,7 @@ search_keyword = input("Enter your search: ")
 trapdoors = sse.trapdoor(keys, search_keyword)
 documents = sse.searchIndex(trapdoors, index)
 print(documents)
+
+# To decrypt
+decrypt = Decryption(documents)
+print(decrypt.decryption())

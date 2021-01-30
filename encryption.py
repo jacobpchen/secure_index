@@ -1,5 +1,4 @@
 import os.path
-import shutil
 from cryptography.fernet import Fernet
 
 class Encryption():
