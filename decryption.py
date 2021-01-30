@@ -14,20 +14,23 @@ class Decryption():
     def decryption(self):
         key = self.load_key()
         f = Fernet(key)
+        count = 0
 
-        for document in range(0, len(self.list_of_docs)):
-            print(self.list_of_docs[document])
+        try:
+            for document in range(0, len(self.list_of_docs)):
+                path = '.\Encrypted Files\\'
+                with open(path+self.list_of_docs[document] + '.txt', 'rb') as file:
+                    # Read the encrypted data
+                    encrypted_data = file.read()
+                    file.close()
 
-            path = '.\Encrypted Files\\'
-            with open(path+self.list_of_docs[document] + '.txt', 'rb') as file:
-                # Read the encrypted data
-                encrypted_data = file.read()
-
-            decrypted_data = f.decrypt(encrypted_data)
-            # Create a folder to store decrypted documents
-            path = '.\Decrypted Files\\'
-            with open(path+self.list_of_docs[document] + '.txt', 'wb') as file:
-                file.write(decrypted_data)
-
-
-
+                decrypted_data = f.decrypt(encrypted_data)
+                # Create a folder to store decrypted documents
+                path = '.\Decrypted Files\\'
+                with open(path+self.list_of_docs[document] + '.txt', 'wb') as file:
+                    file.write(decrypted_data)
+                    file.close()
+                    count += 1
+            return 'Sucessfully decrypted',  count, 'files'
+        except:
+            print("Error when trying to decrypt")

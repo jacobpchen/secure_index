@@ -1,11 +1,8 @@
 import hmac
 import hashlib
 import secrets
-import math
 import glob
 import random
-from math import *
-from bitarray import bitarray
 from bloomfilter import BloomFilter
 from encryption import Encryption
 
@@ -36,23 +33,33 @@ class SearchableEncryptionScheme():
 
         return kpriv
 
-    def trapdoor(self, kpriv, word):
-        word = word.lower()
-        # Creates an empty list to hold the trapdoors for word
-        tw = []
-        # Convert the word into a bytes object - Necessary to use HMAC
-        w = bytes(word, 'utf-8')
+    def trapdoor(self, kpriv, words):
+        words = words.lower()
+        words = words.split()
+        print(words)
 
-        print(type(w))
+        if 'and' in words:
+            words.remove('and')
+            print(words)
 
-        for i in range(0, self.r):
-            # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
-            key = bytes.fromhex(kpriv[i])
-            trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
-            trapdoor_digest = trapdoor_digest.hexdigest()
-            tw.append(trapdoor_digest)
+            # Creates an empty list to hold the trapdoors for word
+            tw = []
 
-        return tw
+            for word in words:
+                # Convert the word into a bytes object - Necessary to use HMAC
+                w = bytes(word, 'utf-8')
+
+                for i in range(0, self.r):
+                    # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
+                    key = bytes.fromhex(kpriv[i])
+                    trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
+                    trapdoor_digest = trapdoor_digest.hexdigest()
+                    tw.append(trapdoor_digest)
+
+            return tw
+
+        elif('or' in words):
+            print('found or in words')
 
     def build_index(self, document_identifier, kpriv, list_of_words):
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
@@ -116,7 +123,7 @@ class SearchableEncryptionScheme():
             codewords = []
             d_id = bytes(secure_index[i][0], 'utf-8')
 
-            # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
+            # Take each trapdoor and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
             for i in range(0, self.r):
                 # encode the document identifier and the trapdoor[i]
                 message = bytes(trapdoor[i], 'utf-8')
@@ -139,6 +146,12 @@ class SearchableEncryptionScheme():
 
     '''
     Helper Functions
+    '''
+
+    '''
+    Opens all files with a .txt ending within the recipes folder (inc sub directories)
+    Retrieves all unique words and then creates an encrypted file in the encrypted files folder
+    Returns a list of all unique words
     '''
     def get_unique_words(self):
         all_unique_words = []

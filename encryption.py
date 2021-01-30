@@ -1,4 +1,3 @@
-import os.path
 from os import path
 from cryptography.fernet import Fernet
 
@@ -12,7 +11,7 @@ class Encryption():
         """
         Generates a key and save it into a file
         """
-        # if self.doesKeyExist == False:
+        # Checks if there is a key file in the current directory, creates one if not found
         if path.isfile('key.key') == False:
             key = Fernet.generate_key()
             with open("key.key", "wb") as key_file:
@@ -21,12 +20,11 @@ class Encryption():
 
     def load_key(self):
         """
-            Loads the key from the current directory named `key.key`
-            """
+        Loads the key from the current directory named `key.key`
+        """
         return open("key.key", "rb").read()
 
     def encrypt(self):
-
         key = self.load_key()
         f = Fernet(key)
         with open(self.filename, 'rb') as file:
@@ -34,14 +32,8 @@ class Encryption():
             encrypted_data = f.encrypt(plaintext_data)
             file.close()
 
-            path = 'C:\Projects\secure index\Encrypted Files'
-            file_name = self.filename
-            print(file_name)
-            complete_path_name = os.path.join(path, file_name)
-
         # Creates encrypted documents
         path = '.\Encrypted Files\\'
         with open(path + self.document_identifier + '.txt', 'wb') as file:
             file.write(encrypted_data)
             file.close()
-
