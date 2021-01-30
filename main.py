@@ -16,17 +16,11 @@ for i, tuple in enumerate(doc_identifier_and_unique_words):
     unique_words = tuple[1]
     index.append(sse.build_index(doc_id, keys, unique_words))
 
-'''
-Ask user to select folder path
-Accept multiple words? chicken pesto (search once for chicken then search only those docs for pesto?)
-'''
-
 search_keyword = input("Enter your search: ")
 # change to lower case for search keyword
 
 trapdoors = sse.trapdoor(keys, search_keyword)
 documents = sse.searchIndex(trapdoors, index)
-print(documents)
 
 # To decrypt
 decrypt = Decryption(documents)

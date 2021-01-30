@@ -38,6 +38,7 @@ class SearchableEncryptionScheme():
         return kpriv
 
     def trapdoor(self, kpriv, word):
+        word = word.lower()
         # Creates an empty list to hold the trapdoors for word
         tw = []
         # Convert the word into a bytes object - Necessary to use HMAC
@@ -153,6 +154,7 @@ class SearchableEncryptionScheme():
             f = open(file, 'r')
             for line in f:
                 for word in line.split():
+                    word = word.lower()
                     if word not in unique_words_in_document:
                         unique_words_in_document.add(word)
                         unique_word_count += 1
