@@ -27,6 +27,7 @@ class Encryption():
         return open("key.key", "rb").read()
 
     def encrypt(self):
+
         key = self.load_key()
         print(key)
         f = Fernet(key)
@@ -41,6 +42,8 @@ class Encryption():
             complete_path_name = os.path.join(path, file_name)
 
         # Creates encrypted documents
-        with open(self.document_identifier + '.txt', 'wb') as file:
+        path = '.\Encrypted Files\\'
+        with open(path + self.document_identifier + '.txt', 'wb') as file:
             file.write(encrypted_data)
             file.close()
+

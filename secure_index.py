@@ -157,11 +157,9 @@ class SearchableEncryptionScheme():
 
             all_unique_words.append((document_identifier, unique_words_in_document, unique_word_count))
 
-            # Create an encrypted file
+            # Create an encrypted file and store it in the encrypted files folder
             encrypt = Encryption(file, document_identifier)
             encrypt.write_key()
             encrypt.encrypt()
-
-
 
         return all_unique_words
