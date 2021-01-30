@@ -24,4 +24,5 @@ search_keyword = input("Enter your search: ")
 # change to lower case for search keyword
 
 trapdoors = sse.trapdoor(keys, search_keyword)
-print(sse.searchIndex(trapdoors, index))
+documents = sse.searchIndex(trapdoors, index)
+print(documents)

@@ -129,7 +129,13 @@ class SearchableEncryptionScheme():
                 if secure_index[i][1].check(codewords):
                     documents.add(d_id)
 
-        return documents
+        # Convert the type of the documents from bytes to string
+        string_documents = []
+        bytes_documents = list(documents)
+        for i in range (0, len(documents)):
+            string_documents.append(bytes_documents[i].decode("utf-8"))
+
+        return string_documents
 
     '''
     Helper Functions
