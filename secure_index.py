@@ -18,6 +18,8 @@ class SearchableEncryptionScheme():
         # unique word count
         self.unique_word_count = 0
 
+        self.boolean_query = None
+
     def keygen(self, size):
         # Generates a master_key of size bytes
         master_key = secrets.token_bytes(size)
@@ -36,30 +38,20 @@ class SearchableEncryptionScheme():
     def trapdoor(self, kpriv, words):
         words = words.lower()
         words = words.split()
-        print(words)
 
         if 'and' in words:
+            self.boolean_query = 'and'
             words.remove('and')
-            print(words)
-
-            # Creates an empty list to hold the trapdoors for word
-            tw = []
-
-            for word in words:
-                # Convert the word into a bytes object - Necessary to use HMAC
-                w = bytes(word, 'utf-8')
-
-                for i in range(0, self.r):
-                    # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
-                    key = bytes.fromhex(kpriv[i])
-                    trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
-                    trapdoor_digest = trapdoor_digest.hexdigest()
-                    tw.append(trapdoor_digest)
-
-            return tw
+            return self.generate_trapdoors(words, kpriv)
 
         elif('or' in words):
-            print('found or in words')
+            self.boolean_query = 'or'
+            words.remove('or')
+            return self.generate_trapdoors(words, kpriv)
+
+        else:
+            return self.generate_trapdoors(words, kpriv)
+
 
     def build_index(self, document_identifier, kpriv, list_of_words):
         # Create an empty list to hold the trapdoors for the word (x1, x2, ..., xr)
@@ -98,7 +90,7 @@ class SearchableEncryptionScheme():
         '''
         Create a bloom filter and insert the codewords into the bloom filter
         '''
-        # Creates a bloom filter and prints the stats
+        # Creates a bloom filter
         bf = BloomFilter(len(codewords))
 
         # For each value in the list of codewords, add the codeword to the bloom filter
@@ -114,6 +106,8 @@ class SearchableEncryptionScheme():
         return(document_identifier, bf)
 
     def searchIndex(self, trapdoor, secure_index):
+
+        
 
         # Create a documents set that will store the documents that return true from BF
         documents = set()
@@ -182,3 +176,18 @@ class SearchableEncryptionScheme():
             encrypt.encrypt()
 
         return all_unique_words
+
+    def generate_trapdoors(self, words, kpriv):
+        tw = []
+        for word in words:
+            # Convert the word into a bytes object - Necessary to use HMAC
+            w = bytes(word, 'utf-8')
+
+            for i in range(0, self.r):
+                # Converts kpriv[i] from hex to a bytes object - Necessary to use HMAC
+                key = bytes.fromhex(kpriv[i])
+                trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
+                trapdoor_digest = trapdoor_digest.hexdigest()
+                tw.append(trapdoor_digest)
+
+        return tw
