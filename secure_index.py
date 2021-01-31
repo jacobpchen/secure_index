@@ -20,6 +20,8 @@ class SearchableEncryptionScheme():
 
         self.boolean_query = None
 
+        self.num_of_search_words = 0
+
     def keygen(self, size):
         # Generates a master_key of size bytes
         master_key = secrets.token_bytes(size)
@@ -42,11 +44,13 @@ class SearchableEncryptionScheme():
         if 'and' in words:
             self.boolean_query = 'and'
             words.remove('and')
+            self.num_of_search_words = len(words)
             return self.generate_trapdoors(words, kpriv)
 
         elif('or' in words):
             self.boolean_query = 'or'
             words.remove('or')
+            self.num_of_search_words = len(words)
             return self.generate_trapdoors(words, kpriv)
 
         else:
@@ -71,12 +75,6 @@ class SearchableEncryptionScheme():
                 trapdoor_digest = hmac.new(key, msg=w, digestmod=hashlib.sha1)
                 trapdoor_digest = trapdoor_digest.hexdigest()
                 trapdoor.append(trapdoor_digest)
-
-        '''
-        Error was here - my loop to create a codeword would take ONLY the first word and add it 5 times. 
-        I changed it so that I now generate ALL trapdoors then I use another loop to generate codewords
-        instead of word by word        
-        '''
 
         # Take each word and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
         for i in range(0, len(trapdoor)):
@@ -108,7 +106,17 @@ class SearchableEncryptionScheme():
     def searchIndex(self, trapdoor, secure_index):
 
         if self.boolean_query == None:
-            return self.search_using_none(trapdoor, secure_index)
+            return self.search(trapdoor, secure_index)
+        elif self.boolean_query == 'and':
+            # Seperate the list into two pieces
+            documents1 = self.search(trapdoor[0:len(trapdoor)//self.num_of_search_words], secure_index)
+            documents2 = self.search(trapdoor[len(trapdoor)//self.num_of_search_words:], secure_index)
+
+            documents = list(set(documents1).intersection(documents2))
+            print(documents)
+            return(documents)
+
+
 
 
     '''
@@ -165,11 +173,9 @@ class SearchableEncryptionScheme():
 
         return tw
 
-    def search_using_none(self, trapdoor, secure_index):
+    def search(self, trapdoor, secure_index):
         # Create a documents set that will store the documents that return true from BF
         documents = set()
-        print(trapdoor)
-        print(secure_index)
 
         for i in range(0, len(secure_index)):
             # Create a list to store the codewords for each document
@@ -177,7 +183,7 @@ class SearchableEncryptionScheme():
             d_id = bytes(secure_index[i][0], 'utf-8')
 
             # Take each trapdoor and hash it again with the document_identifier as the key to generate y1, y2, ..., yr
-            for i in range(0, self.r):
+            for i in range(0, len(trapdoor)):
                 # encode the document identifier and the trapdoor[i]
                 message = bytes(trapdoor[i], 'utf-8')
                 codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
@@ -196,3 +202,8 @@ class SearchableEncryptionScheme():
             string_documents.append(bytes_documents[i].decode("utf-8"))
 
         return string_documents
+
+
+
+
+
