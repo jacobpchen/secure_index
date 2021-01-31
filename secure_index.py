@@ -108,16 +108,15 @@ class SearchableEncryptionScheme():
         if self.boolean_query == None:
             return self.search(trapdoor, secure_index)
         elif self.boolean_query == 'and':
-            # Seperate the list into two pieces
-            documents1 = self.search(trapdoor[0:len(trapdoor)//self.num_of_search_words], secure_index)
-            documents2 = self.search(trapdoor[len(trapdoor)//self.num_of_search_words:], secure_index)
-
-            documents = list(set(documents1).intersection(documents2))
-            print(documents)
-            return(documents)
-
-
-
+            word1 = self.search(trapdoor[0:len(trapdoor)//self.num_of_search_words], secure_index)
+            word2 = self.search(trapdoor[len(trapdoor)//self.num_of_search_words:], secure_index)
+            documents = list(set(word1).intersection(word2))
+            return documents
+        elif self.boolean_query == 'or':
+            word1 = self.search(trapdoor[0:len(trapdoor) // self.num_of_search_words], secure_index)
+            word2 = self.search(trapdoor[len(trapdoor) // self.num_of_search_words:], secure_index)
+            documents = list(set(word1).union(word2))
+            return documents
 
     '''
     Helper Functions
