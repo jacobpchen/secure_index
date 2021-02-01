@@ -15,11 +15,8 @@ class SearchableEncryptionScheme():
         # number of functions
         self.r = 5
 
-        # unique word count
         self.unique_word_count = 0
-
         self.boolean_query = None
-
         self.num_of_search_words = 0
 
     def keygen(self, size):
@@ -85,11 +82,11 @@ class SearchableEncryptionScheme():
             codeword_digest = codeword_digest.hexdigest()
             codewords.append(codeword_digest)
 
-        '''
-        Create a bloom filter and insert the codewords into the bloom filter
-        '''
+
+        #Create a bloom filter and insert the codewords into the bloom filter
+
         # Creates a bloom filter
-        bf = BloomFilter(len(codewords))
+        bf = BloomFilter()
 
         # For each value in the list of codewords, add the codeword to the bloom filter
         for codeword in codewords:
@@ -120,6 +117,8 @@ class SearchableEncryptionScheme():
             word2 = self.search(trapdoor[len(trapdoor) // self.num_of_search_words:], secure_index)
             documents = list(set(word1).union(word2))
             return documents
+
+
 
     '''
     Helper Functions
@@ -152,7 +151,7 @@ class SearchableEncryptionScheme():
             if unique_word_count > self.unique_word_count:
                 self.unique_word_count = unique_word_count+25
 
-            all_unique_words.append((document_identifier, unique_words_in_document, unique_word_count))
+            all_unique_words.append((document_identifier, unique_words_in_document))
 
             # Create an encrypted file and store it in the encrypted files folder
             encrypt = Encryption(file, document_identifier)

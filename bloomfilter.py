@@ -4,12 +4,12 @@ from math import *
 import hashlib
 from bitarray import bitarray
 
-class BloomFilter(object):
+class BloomFilter():
     '''
     Class for Bloom filter, using SHA1 hash function
     '''
 
-    def __init__(self, items_count):
+    def __init__(self):
         # Size of bit array to use 2^16
         self.size = 65536
 
