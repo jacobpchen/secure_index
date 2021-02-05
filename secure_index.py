@@ -1,4 +1,5 @@
 import hmac
+import os
 import hashlib
 import secrets
 import glob
@@ -18,6 +19,7 @@ class SearchableEncryptionScheme():
         self.unique_word_count = 0
         self.boolean_query = None
         self.num_of_search_words = 0
+        self.document_number = 1
 
     def keygen(self, size):
         # Generates a master_key of size bytes
@@ -100,13 +102,14 @@ class SearchableEncryptionScheme():
 
         return(document_identifier, bf)
 
-    def searchIndex(self, trapdoor, secure_index):
+    def search_index(self, trapdoor, secure_index):
 
         if self.boolean_query == None:
             return self.search(trapdoor, secure_index)
         elif self.boolean_query == 'and':
             # Take the trapdoors for word1 and pass it to search returns a set of documents that contain word1
             word1 = self.search(trapdoor[0:len(trapdoor)//self.num_of_search_words], secure_index)
+            print(type(word1))
             # Take the trapdoors for word2 and pass it to search returns a set of documents that contain word2
             word2 = self.search(trapdoor[len(trapdoor)//self.num_of_search_words:], secure_index)
             # set intersection
@@ -118,7 +121,54 @@ class SearchableEncryptionScheme():
             documents = list(set(word1).union(word2))
             return documents
 
+    def add_document(self, index, keys):
+        all_unique_words = []
+        files = glob.glob('recipes to add/**/*.txt', recursive=True)
+        for file in files:
+            document_identifier = 'document' + str(self.document_number)
+            self.document_number += 1
+            unique_word_count = 0
+            unique_words_in_document = set()
+            f = open(file, 'r')
+            for line in f:
+                for word in line.split():
+                    word = word.lower()
+                    if word not in unique_words_in_document:
+                        unique_words_in_document.add(word)
+                        unique_word_count += 1
+            f.close()
 
+            if unique_word_count > self.unique_word_count:
+                self.unique_word_count = unique_word_count + 25
+
+            all_unique_words.append((document_identifier, unique_words_in_document))
+
+            # Create an encrypted file and store it in the encrypted files folder
+            encrypt = Encryption(file, document_identifier)
+            encrypt.encrypt()
+
+        doc_identifier_and_unique_words = all_unique_words
+        for i, tuple in enumerate(doc_identifier_and_unique_words):
+            doc_id = tuple[0]
+            unique_words = tuple[1]
+            index.append(self.build_index(doc_id, keys, unique_words))
+
+    def delete_document(self, file, index):
+
+        # Search each document if the name maches a document then delete it if not return an error
+        for i, tuple in enumerate(index):
+            doc_id = tuple[0]
+            bf = tuple[1]
+            if file == doc_id:
+                del index[i]
+                print(index)
+                path = '.\\Encrypted Files\\' + file + '.txt'
+                print(path)
+                os.remove(path)
+                print(file, "has been deleted")
+                return index
+
+        print("Document not found. Please ensure that the file is named like: document1, document2 etc")
 
     '''
     Helper Functions
@@ -131,12 +181,12 @@ class SearchableEncryptionScheme():
     '''
     def get_unique_words(self):
         all_unique_words = []
-        document_number = 1
+
         files = glob.glob('recipes/**/*.txt', recursive=True)
 
         for file in files:
-            document_identifier = 'document' + str(document_number)
-            document_number += 1
+            document_identifier = 'document' + str(self.document_number)
+            self.document_number += 1
             unique_word_count = 0
             unique_words_in_document = set()
             f = open(file, 'r')

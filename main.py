@@ -17,10 +17,19 @@ for i, tuple in enumerate(doc_identifier_and_unique_words):
     unique_words = tuple[1]
     index.append(sse.build_index(doc_id, keys, unique_words))
 
+print('Number of files before adding:', len(index))
+# add a document
+sse.add_document(index, keys)
+print('Number of files after adding:', len(index))
+
+# delete a document
+file = input("Please type in the document name that you wish to delete: ")
+sse.delete_document(file, index)
+
 search_keyword = input("Enter your search: ")
 
 trapdoors = sse.trapdoor(keys, search_keyword)
-documents = sse.searchIndex(trapdoors, index)
+documents = sse.search_index(trapdoors, index)
 
 # To decrypt
 decrypt = Decryption(documents)
