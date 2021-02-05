@@ -121,31 +121,8 @@ class SearchableEncryptionScheme():
             documents = list(set(word1).union(word2))
             return documents
 
-    def add_document(self, index, keys):
-        all_unique_words = []
-        files = glob.glob('recipes to add/**/*.txt', recursive=True)
-        for file in files:
-            document_identifier = 'document' + str(self.document_number)
-            self.document_number += 1
-            unique_word_count = 0
-            unique_words_in_document = set()
-            f = open(file, 'r')
-            for line in f:
-                for word in line.split():
-                    word = word.lower()
-                    if word not in unique_words_in_document:
-                        unique_words_in_document.add(word)
-                        unique_word_count += 1
-            f.close()
-
-            if unique_word_count > self.unique_word_count:
-                self.unique_word_count = unique_word_count + 25
-
-            all_unique_words.append((document_identifier, unique_words_in_document))
-
-            # Create an encrypted file and store it in the encrypted files folder
-            encrypt = Encryption(file, document_identifier)
-            encrypt.encrypt()
+    def add_document(self, index, keys, file_path):
+        all_unique_words = self.get_unique_words(file_path)
 
         doc_identifier_and_unique_words = all_unique_words
         for i, tuple in enumerate(doc_identifier_and_unique_words):
@@ -179,10 +156,10 @@ class SearchableEncryptionScheme():
     Retrieves all unique words and then creates an encrypted file in the encrypted files folder
     Returns a list of all unique words
     '''
-    def get_unique_words(self):
+    def get_unique_words(self, file_path):
         all_unique_words = []
 
-        files = glob.glob('recipes/**/*.txt', recursive=True)
+        files = glob.glob(file_path, recursive=True)
 
         for file in files:
             document_identifier = 'document' + str(self.document_number)

@@ -5,7 +5,7 @@ sse = SearchableEncryptionScheme()
 keys = sse.keygen(20)
 
 # Call function to open a directory and scan all doc files for unique words.
-doc_identifier_and_unique_words = sse.get_unique_words()
+doc_identifier_and_unique_words = sse.get_unique_words('recipes/**/*.txt')
 
 # Build index is a list of tuples containing the bloom filter and the document unique identifier
 # i.e. ('document1', document1 bf, 'document2', document2 bf, ...)
@@ -19,7 +19,7 @@ for i, tuple in enumerate(doc_identifier_and_unique_words):
 
 print('Number of files before adding:', len(index))
 # add a document
-sse.add_document(index, keys)
+sse.add_document(index, keys, 'recipes to add/**/*.txt')
 print('Number of files after adding:', len(index))
 
 # delete a document
