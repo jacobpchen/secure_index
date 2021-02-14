@@ -33,7 +33,6 @@ class SearchableEncryptionScheme():
             # convert the digest from a bytes to hex
             hmac_digest = hmac_digest.hexdigest()
             kpriv.append(hmac_digest)
-
         return kpriv
 
     def trapdoor(self, kpriv, words):

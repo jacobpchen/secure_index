@@ -2,9 +2,11 @@ from secure_index import SearchableEncryptionScheme
 from decryption import Decryption
 
 sse = SearchableEncryptionScheme()
+print("Generating keys")
 keys = sse.keygen(20)
-
+print(keys)
 # Call function to open a directory and scan all doc files for unique words.
+print("Reading recipes folder...")
 doc_identifier_and_unique_words = sse.get_unique_words('recipes/**/*.txt')
 
 # Build index is a list of tuples containing the bloom filter and the document unique identifier
@@ -12,10 +14,13 @@ doc_identifier_and_unique_words = sse.get_unique_words('recipes/**/*.txt')
 index = []
 
 # Destructure the list and create a bloom filter for each document
+print("Generating secure index")
 for i, tuple in enumerate(doc_identifier_and_unique_words):
     doc_id = tuple[0]
     unique_words = tuple[1]
     index.append(sse.build_index(doc_id, keys, unique_words))
+
+print(index)
 
 print('Number of files before adding:', len(index))
 # add a document
