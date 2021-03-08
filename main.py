@@ -1,6 +1,6 @@
 from secure_index import SearchableEncryptionScheme
 from decryption import Decryption
-
+import shutil
 sse = SearchableEncryptionScheme()
 print("Generating keys")
 keys = sse.keygen(20)
@@ -28,8 +28,8 @@ sse.add_document(index, keys, 'recipes to add/**/*.txt')
 print('Number of files after adding:', len(index))
 
 # delete a document
-file = input("Please type in the document name that you wish to delete: ")
-sse.delete_document(file, index)
+# file = input("Please type in the document name that you wish to delete: ")
+# sse.delete_document(file, index)
 
 search_keyword = input("Enter your search: ")
 

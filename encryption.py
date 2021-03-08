@@ -1,11 +1,22 @@
 from os import path
 from cryptography.fernet import Fernet
+from ftplib import FTP
+import config
+import os
 
 class Encryption():
     def __init__(self, filename, document_identifier):
         self.filename = filename
         self.document_identifier = document_identifier
         self.write_key()
+
+        self.ftp = FTP(config.ftp)
+        self.ftp.login(user= config.user, passwd=config.passwrd)
+
+    '''
+    def connect_ftp(self, ftp_address, username, password):
+        return
+    '''
 
     def write_key(self):
         """
@@ -25,6 +36,7 @@ class Encryption():
         return open("key.key", "rb").read()
 
     def encrypt(self):
+
         key = self.load_key()
         f = Fernet(key)
         with open(self.filename, 'rb') as file:
@@ -32,8 +44,18 @@ class Encryption():
             encrypted_data = f.encrypt(plaintext_data)
             file.close()
 
-        # Creates encrypted documents
+        # Create a local file called self.document_identifier
         path = '.\Encrypted Files\\'
         with open(path + self.document_identifier + '.txt', 'wb') as file:
             file.write(encrypted_data)
             file.close()
+
+        # Upload files to the FTP server
+        self.ftp.cwd('/Encrypted Files/')
+        self.ftp.pwd()
+
+        filename = str(self.document_identifier + '.txt')
+        # Get the local path where the encrypted files are saved
+        path = '.\Encrypted Files\\'
+        self.ftp.storbinary('STOR '+ filename, open(path + filename, 'rb'))
+        self.ftp.quit()

@@ -4,6 +4,7 @@ import hashlib
 import secrets
 import glob
 import random
+import shutil
 from bloomfilter import BloomFilter
 from encryption import Encryption
 
@@ -24,7 +25,7 @@ class SearchableEncryptionScheme():
     def keygen(self, size):
         # Generates a master_key of size bytes
         master_key = secrets.token_bytes(size)
-
+        print(master_key)
         # Create an empty list to hold the kpriv
         kpriv = []
         for i in range (0, self.r):
@@ -82,7 +83,6 @@ class SearchableEncryptionScheme():
             codeword_digest = hmac.new(message, msg=d_id, digestmod=hashlib.sha1)
             codeword_digest = codeword_digest.hexdigest()
             codewords.append(codeword_digest)
-
 
         #Create a bloom filter and insert the codewords into the bloom filter
 
